@@ -63,16 +63,30 @@ def list_files_mp(mpfs, directory='', mp_folders=None):
         mpfs.do_cd('..')
     return mp_files, mp_folders
 
-def create_remote_folder(mpfs, folder_path):
+
+def split_path(path):
+    parts = []
+    while path:
+        parts.insert(0, path)
+        path, _ = os.path.split(path)
+        if path == '' or path == '/':
+            break
+    return parts
+    
+
+def create_remote_folder(mpfs, folder_path, mp_folders):
     try:
-        mpfs.do_md(folder_path)
+        paths = split_path(folder_path)
+        for path in paths:
+            if path not in mp_folders:
+                mpfs.do_md(path)
     except Exception as e:
         print(f"Could not create folder {folder_path}: {e}")
 
 def upload_file(mpfs, local_path, mp_path, mp_folders):
     mp_dir = os.path.dirname(mp_path)
     if mp_dir and mp_dir not in mp_folders:
-        create_remote_folder(mpfs, mp_dir)
+        create_remote_folder(mpfs, mp_dir, mp_folders)
         mp_folders.add(mp_dir)
     mpfs.do_put(f'{local_path} {mp_path}')
 
