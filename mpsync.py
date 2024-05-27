@@ -113,6 +113,7 @@ def update_files(mp_port, local_dir, mp_dir):
     print('Scanning files...')
     mp_files, mp_folders = list_files_mp(mpfs)
     local_files = list_files_local(local_dir)
+    mp_folders.add('/')
 
     updated_files = 0
     for file in local_files:
